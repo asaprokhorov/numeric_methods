@@ -1,4 +1,37 @@
 import math
+
+
+def f(x):
+    return x * x + 4 * math.sin(x)
+
+
+def prime(x):
+    return 2 * x + 4 * math.cos(x)
+
+
+def chords(a, b):
+    return (a * f(b) - b * f(a)) / (f(b) - f(a))
+
+
+def newton(a, b):
+    return b - f(b)/prime(b)
+
+
+def combined(a, b):
+    x = newton(a, b)
+    return chords(x, b)
+
+
+def linear(a, b, eps, method):
+    x = method(a, b)
+    iteration = 0
+    while abs(x - b) > eps:
+        b = x
+        iteration += 1
+        x = method(a, b)
+    return x, iteration
+
+
 def s1(x, y):
     return math.sin(x - 1) - 1.3 + y
 
@@ -68,6 +101,13 @@ def iterationsys(x0, y0, eps):
         y = itY(x0, y0)
     return x, y, iteration
 
+
+print("CHORDS")
+print(linear(-0.05, 0.05, 0.00000001, chords))
+print("NEWTON")
+print(linear(-0.05, 0.05, 0.00000001, newton))
+print("COMBINED")
+print(linear(-0.05, 0.05, 0.00000001, combined))
 
 print("ITERATIONSYS")
 print(iterationsys(0, 0, 0.00001))
