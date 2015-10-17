@@ -13,7 +13,7 @@ def f(x):
 # Input data
 a = -1.0
 b = 2.0
-N = 5
+N = 20
 n = N // 2
 h = (b - a) / N
 xFunc = []
@@ -30,9 +30,9 @@ for i in range(1, N + 1):
 
 # Newton forward method
 def newton_forward(x):
-    result = f(a)
+    result = f(xFunc[0])
     elem = 1
-    t = (x - a) / h
+    t = (x - xFunc[0]) / h
     for i in range(1, N + 1):
         elem *= (t - i + 1) / i
         result += elem * differences[i][0]
@@ -161,6 +161,23 @@ yF = []
 
 for i in range(N + 1):
     yF.append(F(xF[i]))
+
+
+def Norm(func):
+    result = 0
+    for i in range(N):
+        result += (func(xFunc[i + 1]) ** 2 + func(xFunc[i]) ** 2) * (xFunc[i + 1] - xFunc[i]) / 2.
+    return numpy.sqrt(result)
+
+
+print("Fluff Newton")
+print(abs(Norm(f) - Norm(newton_forward)))
+
+print("Fluff Gauss")
+print(abs(Norm(f) - Norm(gauss_backward)))
+
+print("Fluff The least squares")
+print(abs(Norm(f) - Norm(F)))
 
 # The least square Graphic
 plt.plot(xF, yF)
