@@ -14,6 +14,7 @@ def f(x):
 a = -1.0
 b = 2.0
 N = 20
+m = 15
 n = N // 2
 h = (b - a) / N
 xFunc = []
@@ -93,13 +94,13 @@ def scalar(i):
 
 
 matrix = []
-for i in range(N + 1):
+for i in range(m + 1):
     matrix.append([])
-    for j in range(N + 1):
+    for j in range(m + 1):
         matrix[i].append(scalar_phi(i, j))
-b = []
-for i in range(N + 1):
-    b.append(scalar(i))
+col = []
+for i in range(m + 1):
+    col.append(scalar(i))
 
 
 class JordanGauss:
@@ -109,75 +110,78 @@ class JordanGauss:
 
     def make_t(self, k):
         t = []
-        for i in range(N + 1):
+        for i in range(m + 1):
             t.append([])
-            for j in range(N + 1):
+            for j in range(m + 1):
                 if i == j:
                     t[i].append(1)
                 else:
                     t[i].append(0)
-        for i in range(N + 1):
+        for i in range(m + 1):
             t[i][k] = -self.matrix[i][k] / self.matrix[k][k]
         t[k][k] = 1. / self.matrix[k][k]
         return t
 
     def multiply(self, matr):
         result = []
-        for i in range(N + 1):
+        for i in range(m + 1):
             result.append([])
-            for j in range(N + 1):
+            for j in range(m + 1):
                 sum = 0
-                for k in range(N + 1):
+                for k in range(m + 1):
                     sum += self.matrix[k][j] * matr[i][k]
                 result[i].append(sum)
         self.matrix = result
         result = []
-        for i in range(N + 1):
+        for i in range(m + 1):
             sum = 0
-            for k in range(N + 1):
+            for k in range(m + 1):
                 sum += matr[i][k] * self.b[k]
             result.append(sum)
         self.b = result
 
     def solve(self):
-        for i in range(N + 1):
+        for i in range(m + 1):
             t = self.make_t(i)
             self.multiply(t)
         return self.b
 
 
-jordan = JordanGauss(matrix, b)
-a = jordan.solve()
+jordan = JordanGauss(matrix, col)
+root = jordan.solve()
 
 
 def F(x):
     result = 0
-    for i in range(N + 1):
-        result += a[i] * phi(x, i)
+    for i in range(m + 1):
+        result += root[i] * phi(x, i)
     return result
 
-xF = xFunc
+kF = 25
+hF = (b - a) / kF
+xF = []
 yF = []
 
-for i in range(N + 1):
+for i in range(kF + 1):
+    xF.append(a + i * hF)
     yF.append(F(xF[i]))
 
 
-def Norm(func):
+def Norm(func1, func2):
     result = 0
     for i in range(N):
-        result += (func(xFunc[i + 1]) ** 2 + func(xFunc[i]) ** 2) * (xFunc[i + 1] - xFunc[i]) / 2.
+        result += ((func1(xFunc[i + 1]) - func2(xFunc[i + 1])) ** 2 + (func1(xFunc[i]) - func2(xFunc[i])) ** 2) * (xFunc[i + 1] - xFunc[i]) / 2.
     return numpy.sqrt(result)
 
 
 print("Fluff Newton")
-print(abs(Norm(f) - Norm(newton_forward)))
+print(abs(Norm(f, newton_forward)))
 
 print("Fluff Gauss")
-print(abs(Norm(f) - Norm(gauss_backward)))
+print(abs(Norm(f, gauss_backward)))
 
 print("Fluff The least squares")
-print(abs(Norm(f) - Norm(F)))
+print(abs(Norm(f, F)))
 
 # The least square Graphic
 plt.plot(xF, yF)
