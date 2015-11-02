@@ -6,8 +6,8 @@ def f(x):
     return numpy.tan(x / 2)
 
 
-a = -1.0
-b = 2.0
+a = -1.
+b = 2
 N = 20
 h = (b - a) / N
 
@@ -18,18 +18,20 @@ for i in range(N + 1):
     yF.append(f(xF[i]))
 
 
-def rectangles(eps):
-    result = 0
-    n = N
-    r = h
-    count = 0
-    while r ** 2 > eps:
-        r /= 2
-        n *= 2
-        count += 1
-    for i in range(n):
-        result += r * f(a + (i + 1 / 2) * r)
-    return result, count, n
+def rectangles(eps, N):
+    r1 = (b - a) / N
+    n1 = N
+    r2 = r1 / 2
+    n2 = N * 2
+    result1 = 0
+    result2 = 0
+    for i in range(n1):
+        result1 += r1 * f(a + (i + 1 / 2) * r1)
+    for i in range(n2):
+        result2 += r2 * f(a + (i + 1 / 2) * r2)
+    if abs(result1 - result2) / (2 ** 2 - 1) > eps:
+        return rectangles(eps, N * 2)
+    return result1
 
 
 def trapezes(eps):
@@ -57,7 +59,7 @@ def simpson(eps):
     result = f(a) + f(b) + 4 * f(a + r / 2)
     for i in range(1, n):
         result += 2 * f(a + i * r) + 4 * f(a + (i + 1 / 2) * r)
-    result *= r/ 6
+    result *= r / 6
     return result, count, n
 
 
@@ -91,7 +93,7 @@ def gauss5():
 
 eps = 0.0000001
 print("Rectangles")
-print(rectangles(eps))
+print(rectangles(eps, 20))
 print("Trapezes")
 print(trapezes(eps))
 print("Simpson`s")
