@@ -29,19 +29,19 @@ def solve(n):
     d = []
     h = (b - a) / n
     c.append(alpha1 / (h * alpha0 - alpha1))
-    d.append(A * h / alpha1)
+    d.append(A * h / (h * alpha0 - alpha1))
     xval.append(a)
     for i in range(1, n):
         xval.append(a + i * h)
         mi = ((h ** 2) * q(xval[i]) - 2) / (1 + h * p(xval[i]) / 2)
         ki = (1 - h * p(xval[i]) / 2) / (1 + h * p(xval[i]) / 2)
-        Fi = f(xval[i]) / (1 + p(xval[i]) / 2)
+        Fi = f(xval[i]) / (1 + h * p(xval[i]) / 2)
         c.append(1 / (mi - ki * c[i - 1]))
-        d.append((h ** 2) * Fi - ki * c[i - 1] * d[i - 1])
+        d.append(((h ** 2) * Fi - ki * d[i - 1]) * c[i])
     xval.append(b)
-    yval.append((B * h + beta1 * c[n - 1] * d[n - 1]) / (beta0 * h + beta1 * (c[n - 1] + 1)))
+    yval.append((B * h + beta1 * d[n - 1]) / (beta0 * h + beta1 * (c[n - 1] + 1)))
     for i in range(n):
-        yval.append(c[n - 1 - i] * (d[n - 1 - i] - yval[i]))
+        yval.append(d[n - 1 - i] - c[n - 1 - i] * yval[i])
     yval.reverse()
     return xval, yval
 
